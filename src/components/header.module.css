@@ -1,0 +1,10 @@
+.parentdiv{
+    display: flex;
+    justify-content: space-evenly;
+    background-color: beige;
+    width: 100%;
+    height: 2rem;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    box-sizing: border-box;
+}
