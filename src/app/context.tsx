@@ -1,50 +1,75 @@
 "use client";
+
 import { ReactElement, ReactNode, createContext, useReducer, useState } from "react";
 type BasicItemTypes = {
+  id:string;
   title: string;
   disc: string;
   price: number;
+  amount:number;
 
 };
+
+// const items:BasicItemTypes = [{title:'not title',disc:'no disc',price:12}]
 
 type ContextStateType = {
   items: BasicItemTypes[];
   totalAmount: number 
-  adding:(a:number)=>void
+  // adding:(a:number)=>void
 };
 type ActionType = {
   type:'ADD';
-  payload:number
+  payload:{title: string;
+    id:string;
+    disc: string;
+    price: number;
+    amount:number}
 }
 const reducerMethod = (state:ContextStateType ,action:ActionType):ContextStateType=>{
 if (action.type === 'ADD'){
+  const totalAmount = state.totalAmount + action.payload.price * action.payload.amount
   console.log("working reducer add method")
-console.log(action.payload)
-  return {...state ,totalAmount:state.totalAmount + action.payload}
+  const existingItemIndex = state.items.findIndex((item)=>item.id === action.payload.id)
+  const existingItem = state.items[existingItemIndex]
+  let updatedItems:BasicItemTypes[]
+  if (existingItem){
+    const updatedvalue = {...existingItem,amount:existingItem.amount + action.payload.amount}
+   updatedItems = [...state.items]
+    updatedItems[existingItemIndex] = updatedvalue
+  }
+  else {
+
+     updatedItems= state.items.concat(action.payload)
+  }
+
+   
+
+  return {...state ,items:updatedItems,totalAmount:totalAmount}
+
   
+
+
 }
 return state
 }
-let sopa:(a:number)=>void = (x:number)=>{return "Not Intilized"}
-const InitialState: ContextStateType = { items: [], totalAmount: 0,adding:sopa };
+// let sopa:(a:number)=>void = (x:number)=>{return "Not Intilized"}
+const InitialState: ContextStateType = { items: [], totalAmount: 0, };
 
-export const GlobalContext = createContext<ContextStateType>(InitialState);
+export const GlobalContext = createContext<{state:ContextStateType,dispatch:React.Dispatch<ActionType>}>({state:InitialState,dispatch:()=>{}});
 // type ChildrenType = { children?: ReactElement | ReactElement[] };
 type ChildrenType = {
-  children?: ReactNode;
+  children?: ReactElement | ReactElement[];
 };
 
-const ContextProvider = ({ children }: ChildrenType) => {
-  const fullContext: ContextStateType = InitialState;
-  const[reducerState,dispatch]=useReducer(reducerMethod,InitialState)
+const ContextProvider  = ({ children }: ChildrenType) => {
+  // const fullContext: ContextStateType = InitialState;
+  const[state,dispatch]=useReducer(reducerMethod,InitialState)
+  console.log(state)
   // const[fullstate,setfullstate]=useState<ContextStateType>(InitialState)
-  sopa = (a:number)=>{
-    console.log("not working ")
-    dispatch({type:'ADD',payload:a})
-  }
+  
 
   return (
-    <GlobalContext.Provider value={reducerState}>
+    <GlobalContext.Provider value={{state,dispatch}}>
       {children}
     </GlobalContext.Provider>
   );

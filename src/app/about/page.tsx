@@ -1,3 +1,4 @@
+
 import React from "react";
 
 const AboutPage = () => {
@@ -5,6 +6,8 @@ const AboutPage = () => {
     <div>
       <div>hilo</div> <h1>hlo</h1>
       AboutPage
+
+      
     </div>
   );
 };
